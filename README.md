@@ -6,7 +6,30 @@ An original native Android showcase by [Ramy Saleeb](https://github.com/RamySale
 
 The interface stays simple so the engineering decisions are easy to inspect: durable state, unidirectional data flow, lifecycle-aware collection, accessible controls, and explicit failure recovery. All content and application code were created for this public demo. No private or startup source is included.
 
-## A two-minute walkthrough
+**[Try Trail Pack in your browser →](https://ramysaleeb.github.io/android-native-architecture-lab/)** — no installation or sign-in.
+
+The live demo is a lightweight HTML/JavaScript companion. The native Android implementation remains the focus of this repository.
+
+## Try the browser companion
+
+1. Pack **Water bottle**, then try **Remaining** and **Packed**.
+2. Reload the page: your selections remain saved in this browser.
+3. Select **Simulate next save failure**, then toggle an item. The saved selection stays unchanged and a recovery message appears.
+4. Toggle the item again to save successfully. Use Tab and Space to explore with a keyboard.
+
+The browser companion uses `localStorage`, with separate data from the Android app. It is not an Android emulator or Kotlin running in the browser. Unlike DataStore, localStorage does not provide atomic transactions across tabs. A blocked or malformed storage read keeps editing disabled until a successful retry; failed writes do not change the displayed saved state. The page requires an initial network load and is not an installable PWA.
+
+The dependency-free web implementation lives in [`web/`](web/): `model.mjs` owns storage and filtering; `app.mjs` connects the model to accessible native controls; `style.css` adapts the layout to narrow screens. Eight Node tests cover persistence, filters, read/write failures, malformed data, and sequential cross-tab updates.
+
+```sh
+node --test web/model.test.mjs
+python3 -m http.server 8770 --directory web
+# Open http://localhost:8770
+```
+
+[Browser demo CI](https://github.com/RamySaleeb/android-native-architecture-lab/actions/workflows/pages.yml) runs the tests before deploying the public app assets to GitHub Pages. Keyboard interaction, reload persistence, failure recovery, and a 320px-wide layout were also checked in a browser.
+
+## Native Android: a two-minute walkthrough
 
 1. Launch the app. Six fictional items are grouped by Essentials, Clothing, and Extras.
 2. Tap **Water bottle**. The progress count advances only when storage emits the saved state.
@@ -31,7 +54,7 @@ sh gradlew :app:assembleDebug
 sh gradlew :app:installDebug
 ```
 
-This is a native Android application. It does not run as a browser app. The debug APK is produced at `app/build/outputs/apk/debug/app-debug.apk`; successful CI builds also retain an APK artifact for 14 days. Debug signing is for evaluation only.
+The Kotlin application runs on Android; the separate [browser companion](https://ramysaleeb.github.io/android-native-architecture-lab/) makes its core interactions available without installation. The debug APK is produced at `app/build/outputs/apk/debug/app-debug.apk`; successful CI builds also retain an APK artifact for 14 days. Debug signing is for evaluation only.
 
 ## Architecture worth reading
 
