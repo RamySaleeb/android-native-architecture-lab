@@ -88,7 +88,7 @@ flowchart LR
 
 ## Verification
 
-Verified on 12 October 2026: **7 unit tests and 12 Android emulator tests passed**, along with the debug build and lint (zero errors; dependency and target-version upgrade warnings remain). Device tests ran on Android 16 / API 36.1. CI runs unit tests, lint, and APK assembly; device tests currently run locally.
+Verified on 12 October 2026: **7 unit tests and 12 Android emulator tests passed**, along with the debug build and lint (zero errors; dependency and target-version upgrade warnings remain). Device tests ran on Android 16 / API 36.1. CI runs unit tests, lint, APK assembly, and the full native device suite on every pull request and push to `main`. The device job uses Android 15 / API 35 (`google_apis`, `x86_64`) on Ubuntu 24.04; local API 36.1 coverage remains complementary. See [emulator CI details](docs/accessibility.md#emulator-ci).
 
 ```sh
 sh gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
