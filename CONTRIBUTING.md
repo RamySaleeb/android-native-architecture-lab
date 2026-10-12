@@ -11,7 +11,7 @@ Try the [browser companion](https://ramysaleeb.github.io/android-native-architec
 | Extract English UI strings into resources | [#1](https://github.com/RamySaleeb/android-native-architecture-lab/issues/1) | Good first issue for someone comfortable with Compose |
 | Check TalkBack, keyboard, and large-text behavior | [#2](https://github.com/RamySaleeb/android-native-architecture-lab/issues/2) | Android UI/testing |
 | Automate the browser walkthrough and focus behavior | [#3](https://github.com/RamySaleeb/android-native-architecture-lab/issues/3) | Browser testing |
-| Run device tests in GitHub Actions | [#4](https://github.com/RamySaleeb/android-native-architecture-lab/issues/4) | Android tooling/CI |
+| Maintain emulator CI and inspect device reports | [#4](https://github.com/RamySaleeb/android-native-architecture-lab/issues/4) | Android tooling/CI |
 | Design multiple independent trip lists | [#5](https://github.com/RamySaleeb/android-native-architecture-lab/issues/5) | Architecture discussion; design document first |
 
 These are open directions, not release commitments. Check the live issue for current scope and activity. Comment with your intended approach before substantial work to avoid duplication. A small typo or isolated fix can go straight to a pull request. Discuss new dependencies, storage changes, and larger features before implementation; a draft PR is welcome.
@@ -79,7 +79,7 @@ Preserve the sample's useful constraints: saved state is authoritative; failures
 
 Browser checklist: pack/unpack; All/Remaining/Packed and empty states; reload persistence; simulated failure then successful retry; Tab/Shift+Tab and Space activation; focus after a filtered row disappears; narrow layout at 320px and enlarged text. Report what you actually checked and any limitation.
 
-Current CI runs native unit tests, lint, and APK assembly. The Pages workflow runs browser model tests for web changes and deploys only after successful checks on `main`; PRs do not deploy. Native device tests and browser interaction checks are currently local/manual work, with automation tracked above. Do not present unrun checks as passed.
+Current CI runs native unit tests, lint, APK assembly, and the complete instrumented suite on an API 35 emulator for every pull request and push to `main`. Download `trail-pack-device-api35-<attempt>` from the Actions run for HTML/XML test reports, Gradle output, emulator output, logcat, and image metadata (14-day retention, uploaded on success or failure when available). See [emulator CI details](docs/accessibility.md#emulator-ci). The Pages workflow runs browser model tests for web changes and deploys only after successful checks on `main`; PRs do not deploy. Browser interaction checks and TalkBack listening remain manual work. Forked PRs use read-only permissions and no secrets; GitHub may require maintainer approval for a first-time contributor’s workflow. Do not present unrun checks as passed.
 
 ## Report a useful issue
 
