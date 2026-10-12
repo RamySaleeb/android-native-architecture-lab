@@ -37,6 +37,9 @@ python3 -m http.server 8770 --directory web
 4. Close and reopen the app. Packed items survive; the presentation filter starts at All after process recreation.
 5. Scroll to **Under the hood** and select **Simulate next save failure**. Tap an item: a recovery message appears, and saved selections stay unchanged. Tap the item again to save successfully.
 
+6. With a keyboard, select **Remaining**, focus an item, and press Space. When the saved item leaves the list, focus returns to the selected filter. Focused rows have a visible outline.
+7. Increase text size and scroll through every item and action. See the [native accessibility walkthrough](docs/accessibility.md) for keyboard, TalkBack, large-text checks, and test evidence.
+
 There is no server to configure, no sign-in, and no `INTERNET` permission. The failure switch is an explicit teaching tool; normal saves use real device storage.
 
 ## Run locally
@@ -85,7 +88,7 @@ flowchart LR
 
 ## Verification
 
-Verified on 12 October 2026: **7 unit tests and 4 Android emulator tests passed**, along with the debug build and lint (zero errors; dependency and target-version upgrade warnings remain). Device tests ran on Android 16 / API 36.1. CI runs unit tests, lint, and APK assembly; device tests currently run locally.
+Verified on 12 October 2026: **7 unit tests and 12 Android emulator tests passed**, along with the debug build and lint (zero errors; dependency and target-version upgrade warnings remain). Device tests ran on Android 16 / API 36.1. CI runs unit tests, lint, and APK assembly; device tests currently run locally.
 
 ```sh
 sh gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
@@ -93,9 +96,9 @@ sh gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 sh gradlew :app:connectedDebugAndroidTest
 ```
 
-Unit tests exercise loading and filters, pack/unpack, one-shot simulated failure, actual write failure, retry, pending-write exclusion, read recovery, and unknown IDs. Device tests exercise merged checkbox semantics, empty states, read recovery controls, and DataStore recreation with concurrent writes.
+Unit tests exercise loading and filters, pack/unpack, one-shot simulated failure, actual write failure, retry, pending-write exclusion, read recovery, and unknown IDs. Device tests exercise merged checkbox semantics, live regions, empty states, keyboard activation and focus restoration, pending-write focus, read recovery, constrained large-text layouts, and DataStore recreation with concurrent writes.
 
-The layout uses wrapping filters, flexible item heights, a bounded reading width, safe-area padding, and whole-row checkbox targets. These are implementation choices, not a claim of complete accessibility conformance. TalkBack, hardware keyboard navigation, localization/RTL, and a wider device/font-scale matrix remain review areas.
+The layout uses wrapping filters, flexible item heights, a bounded reading width, safe-area padding, and whole-row checkbox targets. Automated fixtures cover 320dp-wide layouts at 1× and 2× text scale, including a short viewport. A real TalkBack listening audit, physical keyboard check, system font scaling/rotation, localization/RTL, and a wider device matrix remain open. See the [accessibility verification record](docs/accessibility.md#verification-record); these checks are not a claim of full accessibility conformance.
 
 ## Contribute
 
