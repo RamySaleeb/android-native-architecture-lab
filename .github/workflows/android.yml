@@ -4,6 +4,9 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+concurrency:
+  group: android-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -25,4 +28,73 @@ jobs:
         with:
           name: trail-pack-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+  device-tests:
+    name: Native accessibility and persistence (API 35)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ANDROID_SERIAL: emulator-5554
+      CI_REPORTS: ci-reports
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install SDK components without accepting licenses
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          mkdir -p "$CI_REPORTS"
+          # Hosted runners provide SDK tools and existing license records.
+          # Closed stdin refuses any new license prompt.
+          sdkmanager --install 'platforms;android-36' 'build-tools;36.0.0' 'system-images;android-35;google_apis;x86_64' </dev/null 2>&1 | tee "$CI_REPORTS/sdk-install.log"
+          test -f "$ANDROID_HOME/system-images/android-35/google_apis/x86_64/package.xml"
+          cp "$ANDROID_HOME/system-images/android-35/google_apis/x86_64/package.xml" "$CI_REPORTS/system-image.xml"
+          "$ANDROID_HOME/emulator/emulator" -version > "$CI_REPORTS/emulator-version.txt" 2>&1
+      - name: Enable emulator acceleration
+        run: |
+          sudo chown "$USER" /dev/kvm
+          test -r /dev/kvm && test -w /dev/kvm
+      - name: Run instrumented tests on a fresh emulator
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          set -euo pipefail
+          cleanup() {
+            result=$?
+            trap - EXIT
+            timeout 15s adb logcat -d > "$CI_REPORTS/logcat.txt" 2>&1 || true
+            timeout 10s adb emu kill || true
+            if [ -n "${emulator_pid:-}" ]; then kill "$emulator_pid" 2>/dev/null || true; fi
+            exit "$result"
+          }
+          trap cleanup EXIT
+          trap 'exit 130' INT
+          trap 'exit 143' TERM
+          printf 'no\n' | avdmanager create avd --force --name trail-pack-ci --package 'system-images;android-35;google_apis;x86_64' --device pixel_2
+          "$ANDROID_HOME/emulator/emulator" -avd trail-pack-ci -port 5554 -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -accel on -cores 2 > "$CI_REPORTS/emulator.log" 2>&1 &
+          emulator_pid=$!
+          timeout 300s bash -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 2; done'
+          adb shell input keyevent 82
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+          adb shell getprop > "$CI_REPORTS/device-properties.txt"
+          timeout --signal=TERM --kill-after=30s 12m sh gradlew --no-daemon :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee "$CI_REPORTS/gradle-device-tests.log"
+      - name: Retain device reports and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trail-pack-device-api35-${{ github.run_attempt }}
+          path: |
+            app/build/reports/androidTests/connected/
+            app/build/outputs/androidTest-results/connected/
+            ci-reports/
+          if-no-files-found: warn
           retention-days: 14
