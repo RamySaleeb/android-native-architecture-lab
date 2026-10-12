@@ -41,7 +41,7 @@ On 12 October 2026, **7 JVM unit tests and 12 Android instrumented tests passed*
 
 The 11 screen tests plus one persistence test cover keyboard activation, filtered removal in both directions, pending-save focus, read retry, merged semantics, and text layout. Layout fixtures constrain Compose to 320×640dp at 1× and 2× font scale and 320×240dp at 2×. They check line bounds, ellipsis, minimum target height, and scrolling to actions. These are controlled fixtures, not a manual system font-size or rotation test. Keyboard tests request keyboard input mode and inject keys; no physical keyboard or TalkBack listening pass was completed.
 
-CI currently runs unit tests, lint, and APK assembly. Instrumented tests were run locally; emulator CI is tracked separately in issue #4.
+The API 36.1 instrumented run above was local. CI now runs the full device suite on API 35 as described below, alongside unit tests, lint, and APK assembly.
 
 ## Reproduce automated checks
 
@@ -53,3 +53,23 @@ sh gradlew :app:connectedDebugAndroidTest
 Tests live in `PackScreenTest.kt`; persistence coverage remains in `PackPersistenceTest.kt`. The keyboard fixtures explicitly request keyboard input mode and inject key events. Semantics assertions verify one merged checkbox target, live-region properties, and separate retry actions. Layout assertions inspect text measurement and scroll to offscreen actions.
 
 See [issue #2](https://github.com/RamySaleeb/android-native-architecture-lab/issues/2) for the remaining manual audit and verification record. Semantics follow the [Android accessibility guidance](https://developer.android.com/develop/ui/compose/accessibility/semantics); focus requests run in effects following [Compose focus guidance](https://developer.android.com/develop/ui/compose/touch-input/focus/request-focus).
+
+## Emulator CI
+
+The `Native accessibility and persistence (API 35)` job in [Android CI](https://github.com/RamySaleeb/android-native-architecture-lab/actions/workflows/android.yml) runs all instrumented tests, including keyboard, semantics, large-text, and DataStore coverage, on every pull request, every push to `main`, and manual dispatch. It has no path filter or dependency on the unit-test job, so a separate failure cannot silently skip device coverage.
+
+Configuration: `ubuntu-24.04`, Temurin JDK 17, Android 15 / API 35, `system-images;android-35;google_apis;x86_64`, Pixel 2 profile, two emulator cores, KVM acceleration, software graphics, and a fresh AVD with snapshots disabled. Compile SDK stays 36. The OS label and Android package coordinate are fixed; hosted-runner patches, emulator binaries, and SDK package revisions can change. The artifact records the actual emulator version and image package metadata. This single configuration does not replace API 26–36, OEM, TalkBack listening, or physical keyboard testing.
+
+The job is capped at 30 minutes: SDK setup at eight minutes, emulator boot at five minutes, and Gradle device testing at 12 minutes. Failure status survives log collection; no automatic test retry hides a failure. Exit/signal cleanup collects logcat and terminates the emulator; the hosted runner is disposable if forcibly cancelled. New commits cancel superseded runs for the same PR or branch.
+
+On success or failure, the job uploads `trail-pack-device-api35-<attempt>` for 14 days: HTML reports, XML/raw instrumentation results, Gradle output, emulator output, logcat, device properties, and image/version metadata. A setup failure may produce only setup logs; hard cancellation or runner loss can prevent upload. Open the failed step first, then inspect the artifact.
+
+Forked PRs use `pull_request`, read-only repository permissions, no secrets, and no persisted checkout credentials in the device job. First-time contributors can still require GitHub’s maintainer approval. Running checks does not itself configure branch protection or make them mandatory for merging.
+
+SDK installation uses existing hosted-runner license records and closed stdin. It never runs `sdkmanager --licenses` or automatically agrees to new terms. Missing license acceptance fails setup; a maintainer must review the requirement. For local reproduction, install the same image through Android Studio after personally reviewing any license prompts, start a fresh API 35 emulator, then run:
+
+```sh
+sh gradlew --no-daemon :app:connectedDebugAndroidTest --stacktrace
+```
+
+Find local reports in `app/build/reports/androidTests/connected/` and `app/build/outputs/androidTest-results/connected/`. For hosted execution evidence and measured runtime, see [issue #4](https://github.com/RamySaleeb/android-native-architecture-lab/issues/4).
