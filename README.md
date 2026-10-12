@@ -99,7 +99,9 @@ The layout uses wrapping filters, flexible item heights, a bounded reading width
 
 ## Contribute
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks, and focused ideas. Useful next steps include a larger accessibility test matrix, string-resource localization, and a design proposal for multiple independent trip lists.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for Android and browser setup, a code map, verification guidance, and the pull request workflow.
+
+The [contributor roadmap](https://github.com/RamySaleeb/android-native-architecture-lab/issues) includes [string-resource extraction (good first issue)](https://github.com/RamySaleeb/android-native-architecture-lab/issues/1), [native accessibility](https://github.com/RamySaleeb/android-native-architecture-lab/issues/2), [browser interaction tests](https://github.com/RamySaleeb/android-native-architecture-lab/issues/3), [emulator CI](https://github.com/RamySaleeb/android-native-architecture-lab/issues/4), and a [multiple-trip design proposal](https://github.com/RamySaleeb/android-native-architecture-lab/issues/5). Each issue includes scope and acceptance criteria. These are open directions, not release commitments.
 
 ## Scope
 
