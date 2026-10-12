@@ -18,6 +18,8 @@ There is no server to configure, no sign-in, and no `INTERNET` permission. The f
 
 ## Run locally
 
+Prefer a prebuilt APK? Open a successful [Android CI run](https://github.com/RamySaleeb/android-native-architecture-lab/actions/workflows/android.yml) and download the `trail-pack-debug` artifact (GitHub sign-in required). Extract it and install the APK on an Android device or emulator.
+
 Requirements: Android Studio supporting AGP 9.1, JDK 17+, Android SDK 36, and an Android 8.0+ device or emulator (API 26+). Dependencies download from Google Maven, Maven Central, and the Gradle Plugin Portal.
 
 ```sh
@@ -59,6 +61,8 @@ flowchart LR
 - **Durable versus transient state.** Packed IDs survive process recreation. The ViewModel retains filters across configuration changes; the filter and failure switch are intentionally not persisted across process death.
 
 ## Verification
+
+Verified on 12 October 2026: **7 unit tests and 4 Android emulator tests passed**, along with the debug build and lint (zero errors; dependency and target-version upgrade warnings remain). Device tests ran on Android 16 / API 36.1. CI runs unit tests, lint, and APK assembly; device tests currently run locally.
 
 ```sh
 sh gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
