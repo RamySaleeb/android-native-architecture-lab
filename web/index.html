@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Try Trail Pack: an original interactive packing checklist with local persistence and save-failure recovery. A browser companion to Ramy Saleeb's Kotlin and Jetpack Compose showcase.">
+  <meta name="theme-color" content="#235843"><title>Trail Pack — Pack a little. Go a little further.</title>
+  <link rel="stylesheet" href="./style.css"><script type="module" src="./app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#checklist">Skip to checklist</a>
+<header class="top"><a class="brand" href="./"><span aria-hidden="true">▤</span> Trail Pack</a><nav aria-label="Project"><a href="https://github.com/RamySaleeb/android-native-architecture-lab">View Kotlin source <span aria-hidden="true">↗</span></a></nav></header>
+<main>
+<section class="intro" aria-labelledby="title">
+  <div class="eyebrow">THE WEEKEND EDIT <span>01 / DAY OUT</span></div>
+  <h1 id="title">Pack a little.<br><em>Go a little further.</em></h1>
+  <p>A quiet checklist for your next day out. A few essentials, a little intention, and room for the unexpected.</p>
+  <div class="details"><span>6 thoughtful essentials</span><span>Saved in your browser</span></div>
+</section>
+<div class="workspace">
+<section class="checklist" id="checklist" tabindex="-1" aria-labelledby="list-title">
+  <div class="section-title"><div><div class="eyebrow">YOUR DAY, SORTED</div><h2 id="list-title">The packing list</h2></div><span class="round-icon" aria-hidden="true">↗</span></div>
+  <div class="filters" role="group" aria-label="Filter checklist"><button type="button" data-filter="All" aria-pressed="true">All</button><button type="button" data-filter="Remaining" aria-pressed="false">Remaining</button><button type="button" data-filter="Packed" aria-pressed="false">Packed</button></div>
+  <ul id="items"></ul><p id="empty" hidden></p>
+</section>
+<aside>
+<section class="progress-card" aria-labelledby="progress-title"><div class="eyebrow">A LITTLE PREPARATION</div><div class="landscape" aria-hidden="true"><svg viewBox="0 0 300 110" fill="none"><circle cx="221" cy="29" r="18" fill="#dcdfac"/><path d="M0 105L91 19L170 105Z" fill="#437d60"/><path d="M72 105L161 41L259 105Z" fill="#86a980"/><path d="M171 105L245 64L300 105Z" fill="#b5c99d"/><path d="M103 105C159 88 122 84 165 73" stroke="#f0e8c9" stroke-width="4"/></svg></div><h2 id="progress-title"><span id="count">0</span> <span class="of">of 6 packed</span></h2><progress id="progress" max="6" value="0" aria-label="Packing progress">0 of 6</progress><p id="progress-note">One small thing at a time.</p><div class="storage-note"><span aria-hidden="true">●</span> Local to this browser</div></section>
+<section class="demo-card" aria-labelledby="demo-title"><div class="eyebrow">TRY THE EDGE CASE</div><h2 id="demo-title">What if a save fails?</h2><p>Arm a one-time failure, then tap an item. Its saved state stays unchanged. Tap it again to recover.</p><button id="fail" type="button">Simulate next save failure <span aria-hidden="true">↗</span></button><p id="status" role="status" aria-live="polite">Loading your checklist…</p><button id="retry" type="button" hidden>Retry reading storage</button></section>
+</aside>
+</div>
+<section class="about"><div><div class="eyebrow">SMALL APP. DELIBERATE DECISIONS.</div><h2>Simple on the surface.<br>Thoughtful underneath.</h2></div><div><p>This browser companion recreates the Trail Pack experience in HTML and JavaScript. The native Android project uses Kotlin, Jetpack Compose, StateFlow, and DataStore.</p><p>The web demo stores only checklist selections in localStorage. There is no account, analytics, or backend. Browser data is separate from the Android app.</p><a href="https://github.com/RamySaleeb/android-native-architecture-lab#architecture-worth-reading">Explore the architecture <span aria-hidden="true">→</span></a></div></section>
+</main>
+<footer><p>An original demo by <a href="https://github.com/RamySaleeb">Ramy Saleeb</a></p><p>Fictional sample checklist · Not outdoor safety guidance</p></footer>
+<noscript><p class="no-script">Enable JavaScript to use the checklist. You can still explore the source above.</p></noscript>
+</body></html>
